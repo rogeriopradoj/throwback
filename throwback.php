@@ -27,6 +27,8 @@ function clone_git_repos()
 
     system('echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config');
 
+    system('cat ~/.ssh/config');
+
     foreach ($deps as $dependency) {
 
         $home = 'vendor/' . $dependency[0];
