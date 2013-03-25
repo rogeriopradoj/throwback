@@ -12,5 +12,5 @@ global $deps;
 
 $deps = array(
 
-    array('ehough/pulsar', 'git@github.com:ehough/pulsar.git', 'ehough_pulsar', 'src/main/php')
+    array('ehough/pulsar', 'git://github.com/ehough/pulsar.git', 'ehough_pulsar', 'src/main/php')
 );
