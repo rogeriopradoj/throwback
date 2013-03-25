@@ -64,9 +64,9 @@ function simulate_composer()
     }
 }
 
-echo 'PHP ' . PHP_VERSION . ' is in use.';
+echo "PHP ' . PHP_VERSION . ' is in use.\n";
 
-if (version_compare(PHP_VERSION, '5.3.0') < 0) {
+if (version_compare(PHP_VERSION, '5.3.0', '<')) {
 
     if (is_file('src/test/php/throwback/composer_available_command.php')) {
 
