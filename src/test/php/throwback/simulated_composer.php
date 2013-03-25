@@ -8,4 +8,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-echo "\nHello!";
+
+$deps = array(
+
+    array('ehough/pulsar', 'git@github.com:ehough/pulsar.git', 'ehough_pulsar', 'src/main/php')
+);
