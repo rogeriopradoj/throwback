@@ -67,7 +67,9 @@ EOT;
 
     $content .= '$loader->register();';
 
-    file_put_contents('vendor/autoload.php', $content);
+    file_put_contents(getcwd() . '/vendor/autoload.php', $content);
+
+    system('cat ' . getcwd() . '/vendor/autoload.php');
 }
 
 function simulate_composer()
