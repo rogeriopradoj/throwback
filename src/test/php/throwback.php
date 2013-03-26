@@ -9,4 +9,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-echo "Hello!\n";
+__throwback::$config = array(
+
+    'name'         => 'throwback',
+    'autoload'     => 'src',
+    'dependencies' => array(
+
+        array('ehough/epilog', 'git://github.com/ehough/epilog.git', 'src/main/php')
+    )
+);

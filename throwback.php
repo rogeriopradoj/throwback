@@ -9,59 +9,84 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-function _throwbackSystem($command)
+class __throwback
 {
-    $result = system($command);
+    public static $config;
 
-    if ($result === false) {
+    public static function run()
+    {
+        try {
 
-        echo "$command failed\n";
-        exit(1);
-    }
-}
+            self::_run();
 
-function clone_git_repos()
-{
-    global $deps;
+        } catch (Exception $e) {
 
-    if (! is_dir('vendor')) {
-
-        $result = mkdir('vendor', 0755);
-
-        if ($result === false) {
-
-            echo "Could not create vendor directory\n";
-
+            self::_log('throwback failed: ' . $e->getMessage());
             exit(1);
         }
-    };
+    }
 
-    _throwbackSystem('echo "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config');
+    private static function _run()
+    {
+        self::_log('PHP ' . PHP_VERSION . ' is in use.');
 
-    _throwbackSystem('git clone git://github.com/ehough/pulsar.git vendor/ehough/pulsar');
+        if (! isset(self::$config)) {
 
-    foreach ($deps as $dependency) {
-
-        $home = 'vendor/' . $dependency[0];
-
-        $result = mkdir($home, 0755, true);
-
-        if ($result === false) {
-
-            echo "Could not create $home\n";
-
-            exit(1);
+            throw new Exception('Missing throwback config');
         }
 
-        _throwbackSystem('git clone ' . $dependency[1] . " $home");
+        self::_installComposerDeps();
     }
-}
 
-function build_autoload()
-{
-    global $deps, $selfInfo;
+    private static function _installComposerDeps()
+    {
+        if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 
-    $content = <<<EOT
+            if (isset(self::$config['PHP53-before_script'])) {
+
+                self::_runCommand(self::$config['PHP53-before_script']);
+
+            } else {
+
+                self::_runCommand('composer install --dev');
+            }
+
+        } else {
+
+            self::_performSimulatedComposerInstall();
+        }
+    }
+
+    private static function _performSimulatedComposerInstall()
+    {
+        if (! isset(self::$config['dependencies'])) {
+
+            return;
+        }
+
+        self::_clone_git_repos(self::$config['dependencies']);
+        self::_build_autoload(self::$config['dependencies']);
+    }
+
+    private static function _clone_git_repos($deps)
+    {
+        self::_runCommand('echo "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config');
+
+        self::_runCommand('git clone git://github.com/ehough/pulsar.git vendor/ehough/pulsar');
+
+        foreach ($deps as $dep) {
+
+            $home = 'vendor/' . $dep[0];
+
+            self::_mkdir($home);
+
+            self::_runCommand("git clone " . $dep[1] . " $home");
+        }
+    }
+
+    private static function _build_autoload($deps)
+    {
+        $content = <<<EOT
 <?php
 
 require 'vendor/ehough/pulsar/src/main/php/ehough/pulsar/UniversalClassLoader.php';
@@ -79,60 +104,48 @@ class throwbackLoader extends ehough_pulsar_UniversalClassLoader
 
 EOT;
 
-    foreach ($deps as $dependency) {
+        foreach ($deps as $dependency) {
 
-        $content .= '$loader->registerPrefixFallback(\'' . getcwd() . '/vendor/' . $dependency[0] . '/' . $dependency[2] . "');\n";
-        $content .= '$loader->registerNamespaceFallback(\'' . getcwd() . '/vendor/' . $dependency[0] . '/' . $dependency[2] . "');\n";
+            $content .= '$loader->registerPrefixFallback(\'' . getcwd() . '/vendor/' . $dependency[0] . '/' . $dependency[2] . "');\n";
+            $content .= '$loader->registerNamespaceFallback(\'' . getcwd() . '/vendor/' . $dependency[0] . '/' . $dependency[2] . "');\n";
+        }
+
+        $content .= "\$loader->registerPrefix('" . self::$config['name'] . "', '" . self::$config['autoload'] . "');\n";
+
+        $content .= '$loader->register();';
+
+        $content .= 'return $loader;';
+
+        file_put_contents(getcwd() . '/vendor/autoload.php', $content);
     }
 
-    $content .= "\$loader->registerPrefix('" . $selfInfo[0] . "', '" . $selfInfo[1] . "');\n";
+    private static function _log($message)
+    {
+        echo "$message\n";
+    }
 
-    $content .= '$loader->register();';
+    private static function _runCommand($command)
+    {
+        $result = system($command);
 
-    $content .= 'return $loader;';
+        if ($result === false) {
 
-    file_put_contents(getcwd() . '/vendor/autoload.php', $content);
-}
+            throw new RuntimeException("$command failed");
+        }
+    }
 
-function simulate_composer()
-{
-    if (is_file('src/test/php/throwback/simulated_composer.php')) {
+    private static function _mkdir($path)
+    {
+        $result = mkdir($path, 0755, true);
 
-        echo "Including src/test/php/throwback/simulated_composer.php\n";
+        if ($result === false) {
 
-        require 'src/test/php/throwback/simulated_composer.php';
-
-        clone_git_repos();
-        build_autoload();
-
-    } else {
-
-        echo "src/test/php/throwback/simulated_composer.php not found\n";
+            throw new RuntimeException("Could not mkdir $path");
+        }
     }
 }
 
-echo 'PHP ' . PHP_VERSION . " is in use.\n";
+/** @noinspection PhpIncludeInspection */
+require 'src/test/php/throwback.php';
 
-if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
-
-    if (is_file('src/test/php/throwback/composer_available_command.php')) {
-
-        echo "Now running src/test/php/throwback/composer_available_command.php\n";
-
-        require 'src/test/php/throwback/composer_available_command.php';
-
-    } else {
-
-        echo "src/test/php/throwback/composer_available_command.php does not exist. Running composer install --dev instead.\n";
-
-        _throwbackSystem('composer install --dev');
-    }
-
-} else {
-
-    echo "Now running simulated composer installation\n";
-
-    simulate_composer();
-}
-
-require 'src/test/php/throwback/final_script.php';
+__throwback::run();
