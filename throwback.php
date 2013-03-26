@@ -67,6 +67,8 @@ EOT;
 
     $content .= '$loader->register();';
 
+    $content .= 'return $loader;';
+
     file_put_contents(getcwd() . '/vendor/autoload.php', $content);
 
     echo getcwd() . '/vendor/autoload.php';
