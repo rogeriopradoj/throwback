@@ -8,9 +8,5 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-global $deps;
 
-$deps = array(
-
-    array('ehough/epilog', 'git://github.com/ehough/epilog.git', 'src/main/php')
-);
+echo "Hello!\n";

@@ -27,7 +27,7 @@ function clone_git_repos()
 
     system('echo "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config');
 
-    system('cat ~/.ssh/config');
+    system('git clone git://github.com/ehough/pulsar.git vendor/ehough/pulsar');
 
     foreach ($deps as $dependency) {
 
@@ -48,7 +48,26 @@ function clone_git_repos()
 
 function build_autoload()
 {
+    global $deps;
 
+    $content = <<<EOT
+<?php
+
+require 'vendor/ehough/pulsar/src/main/php/ehough/pulsar/UniversalClassLoader.php';
+
+\$loader = new ehough_pulsar_UniversalClassLoader();
+
+EOT;
+
+    foreach ($deps as $dependency) {
+
+        $content .= '$loader->registerPrefixFallback(' . getcwd() . '/vendor/' . $dependency[0] . '/' . $dependency[2] . ");\n";
+        $content .= '$loader->registerNamespaceFallback(' . getcwd() . '/vendor/' . $dependency[0] . '/' . $dependency[2] . ");\n";
+    }
+
+    $content .= '$loader->register();';
+
+    file_put_contents('vendor/autoload.php', $content);
 }
 
 function simulate_composer()
@@ -91,3 +110,5 @@ if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 
     simulate_composer();
 }
+
+require 'src/test/php/throwback/final_script.php';
