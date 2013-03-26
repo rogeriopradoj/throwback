@@ -55,6 +55,15 @@ function build_autoload()
 
 require 'vendor/ehough/pulsar/src/main/php/ehough/pulsar/UniversalClassLoader.php';
 
+\class throwbackLoader extends ehough_pulsar_UniversalClassLoader
+{
+    public function add(\$prefix, \$dir)
+    {
+        \$this->registerPrefix(\$prefix, \$dir);
+        \$this->registerNamespace(\$prefix, \$dir);
+    }
+}
+
 \$loader = new ehough_pulsar_UniversalClassLoader();
 
 EOT;
