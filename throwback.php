@@ -59,8 +59,8 @@ require 'vendor/ehough/pulsar/src/main/php/ehough/pulsar/UniversalClassLoader.ph
 {
     public function add(\$prefix, \$dir)
     {
-        \$this->registerPrefix(\$prefix, \$dir);
-        \$this->registerNamespace(\$prefix, \$dir);
+        \$this->registerPrefixFallback(\$dir);
+        \$this->registerNamespaceFallback(\$dir);
     }
 }
 
