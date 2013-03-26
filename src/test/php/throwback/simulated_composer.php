@@ -14,3 +14,5 @@ $deps = array(
 
     array('ehough/epilog', 'git://github.com/ehough/epilog.git', 'src/main/php')
 );
+
+$selfInfo = array('foo', 'bar');

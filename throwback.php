@@ -48,7 +48,7 @@ function clone_git_repos()
 
 function build_autoload()
 {
-    global $deps;
+    global $deps, $selfInfo;
 
     $content = <<<EOT
 <?php
@@ -73,6 +73,8 @@ EOT;
         $content .= '$loader->registerPrefixFallback(\'' . getcwd() . '/vendor/' . $dependency[0] . '/' . $dependency[2] . "');\n";
         $content .= '$loader->registerNamespaceFallback(\'' . getcwd() . '/vendor/' . $dependency[0] . '/' . $dependency[2] . "');\n";
     }
+
+    $content .= "\$loader->registerPrefix('" . $selfInfo[0] . "', '" . $selfInfo[1] . "');\n";
 
     $content .= '$loader->register();';
 
