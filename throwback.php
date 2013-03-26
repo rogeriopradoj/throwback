@@ -9,6 +9,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+function _throwbackSystem($command)
+{
+    $result = system($command);
+
+    if ($result === false) {
+
+        echo "$command failed\n";
+        exit(1);
+    }
+}
+
 function clone_git_repos()
 {
     global $deps;
@@ -25,9 +36,9 @@ function clone_git_repos()
         }
     };
 
-    system('echo "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config');
+    _throwbackSystem('echo "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config');
 
-    system('git clone git://github.com/ehough/pulsar.git vendor/ehough/pulsar');
+    _throwbackSystem('git clone git://github.com/ehough/pulsar.git vendor/ehough/pulsar');
 
     foreach ($deps as $dependency) {
 
@@ -42,7 +53,7 @@ function clone_git_repos()
             exit(1);
         }
 
-        system('git clone ' . $dependency[1] . " $home");
+        _throwbackSystem('git clone ' . $dependency[1] . " $home");
     }
 }
 
@@ -81,8 +92,6 @@ EOT;
     $content .= 'return $loader;';
 
     file_put_contents(getcwd() . '/vendor/autoload.php', $content);
-
-    echo getcwd() . '/vendor/autoload.php';
 }
 
 function simulate_composer()
@@ -116,7 +125,7 @@ if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 
         echo "src/test/php/throwback/composer_available_command.php does not exist. Running composer install --dev instead.\n";
 
-        system('composer install --dev');
+        _throwbackSystem('composer install --dev');
     }
 
 } else {
