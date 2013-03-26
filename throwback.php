@@ -61,15 +61,15 @@ EOT;
 
     foreach ($deps as $dependency) {
 
-        $content .= '$loader->registerPrefixFallback(' . getcwd() . '/vendor/' . $dependency[0] . '/' . $dependency[2] . ");\n";
-        $content .= '$loader->registerNamespaceFallback(' . getcwd() . '/vendor/' . $dependency[0] . '/' . $dependency[2] . ");\n";
+        $content .= '$loader->registerPrefixFallback(\'' . getcwd() . '/vendor/' . $dependency[0] . '/' . $dependency[2] . "');\n";
+        $content .= '$loader->registerNamespaceFallback(\'' . getcwd() . '/vendor/' . $dependency[0] . '/' . $dependency[2] . "');\n";
     }
 
     $content .= '$loader->register();';
 
     file_put_contents(getcwd() . '/vendor/autoload.php', $content);
 
-    system('cat ' . getcwd() . '/vendor/autoload.php');
+    echo getcwd() . '/vendor/autoload.php';
 }
 
 function simulate_composer()
