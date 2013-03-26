@@ -64,7 +64,7 @@ require 'vendor/ehough/pulsar/src/main/php/ehough/pulsar/UniversalClassLoader.ph
     }
 }
 
-\$loader = new ehough_pulsar_UniversalClassLoader();
+\$loader = new throwbackLoader();
 
 EOT;
 
