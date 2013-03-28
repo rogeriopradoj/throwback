@@ -4,4 +4,4 @@ php:
   - 5.3
   - 5.4
   - 5.5
-script: "php throwback.php"
+script: "php src/main/php/throwback.php"
