@@ -78,6 +78,11 @@ class __throwback
 
             $home = 'vendor/' . $dep[0];
 
+            if (count($dep) > 3) {
+
+                $home .= '/' . $dep[3];
+            }
+
             self::_mkdir($home);
 
             self::_runCommand("git clone " . $dep[1] . " $home");
@@ -106,8 +111,8 @@ EOT;
 
         foreach ($deps as $dependency) {
 
-            $content .= '$loader->registerPrefixFallback(\'' . getcwd() . '/vendor/' . $dependency[0] . '/' . $dependency[2] . "');\n";
-            $content .= '$loader->registerNamespaceFallback(\'' . getcwd() . '/vendor/' . $dependency[0] . '/' . $dependency[2] . "');\n";
+            $content .= '$loader->registerPrefixFallback(\'' . getcwd() . '/vendor/' . $dependency[0] . '/' . count($dependency) > 3 ? $dependency[3] : '' . '/' . $dependency[2] . "');\n";
+            $content .= '$loader->registerNamespaceFallback(\'' . getcwd() . '/vendor/' . $dependency[0] . '/' . count($dependency) > 3 ? $dependency[3] : '' . '/' . $dependency[2] . "');\n";
         }
 
         $content .= "\$loader->registerPrefix('" . self::$config['name'] . "', '" . self::$config['autoload'] . "');\n";
