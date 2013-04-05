@@ -111,8 +111,8 @@ EOT;
 
         foreach ($deps as $dependency) {
 
-            $content .= '$loader->registerPrefixFallback(\'' . getcwd() . '/vendor/' . $dependency[0] . '/' . count($dependency) > 3 ? $dependency[3] . '/' : '' . $dependency[2] . "');\n";
-            $content .= '$loader->registerNamespaceFallback(\'' . getcwd() . '/vendor/' . $dependency[0] . '/' . count($dependency) > 3 ? $dependency[3] . '/' : '' . $dependency[2] . "');\n";
+            $content .= '$loader->registerPrefixFallback(\'' . getcwd() . '/vendor/' . $dependency[0] . '/' . ( count($dependency) > 3 ? ( $dependency[3] . '/' ) : '' ) . $dependency[2] . "');\n";
+            $content .= '$loader->registerNamespaceFallback(\'' . getcwd() . '/vendor/' . $dependency[0] . '/' . ( count($dependency) > 3 ? ( $dependency[3] . '/' ) : '' ) . $dependency[2] . "');\n";
         }
 
         $content .= "\$loader->registerPrefix('" . self::$config['name'] . "', '" . self::$config['autoload'] . "');\n";
